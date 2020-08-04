@@ -1,9 +1,11 @@
 # Leer de un PDF
+
 install.packages("tabulizer")
 library(tabulizer)
 library(dplyr)
 library(stringr)
-pages<-extract_tables("C01-Importación-de-combustibles-VOLUMEN-2020-03.pdf")#datos2020
+
+pages<-extract_tables("C01-Importaci�n-de-combustibles-VOLUMEN-2020-03.pdf")#datos2020
 datosImp <- do.call(rbind, pages)
 nombresVar<-datosImp[1,]
 datosImp<-as.data.frame(datosImp[2:nrow(datosImp),])
@@ -28,3 +30,92 @@ datosImp$Mes <- as.factor(gsub(",", "", datosImp$Mes))
 datosImp$Diesel <- as.numeric(gsub(",", "", datosImp$Diesel))
 datosImp$GasSuperior <- as.numeric(gsub(",", "", datosImp$GasSuperior))
 datosImp$GasRegular <- as.numeric(gsub(",", "", datosImp$GasRegular))
+
+
+
+# Series de tiempos
+install.packages("forecast")
+install.packages("fUnitRoots")
+install.packages("ggfortify")
+install.packages("tseries")
+
+library(forecast)
+library(tseries)
+library(fUnitRoots)
+library(ggfortify)
+
+
+# variableGasSuper
+ts_gas_superior <- ts(datosImp$GasSuperio, start=c(2001, 1), end=c(2020, 3), frequency=12) # Crear serie de tiempo
+start(ts_gas_superior) # Inicio de serie
+end(ts_gas_superior) # Fin de serie
+frequency(ts_gas_superior) # Frecuencia de serie
+#Ver el gráfico de la serie
+plot(ts_gas_superior)
+abline(reg=lm(ts_gas_superior~time(ts_gas_superior)), col=c("red"))
+# Descomposicion en componentes
+dec.ts_gas_superior<-decompose(ts_gas_superior)
+plot(dec.ts_gas_superior)
+# Para saber si hay raices unitarias
+adfTest(ts_gas_superior)
+# Grafico de autocorrelacion
+acf(ts_gas_superior)
+# Funciones de autocorrelacion y autocorrelacion parcial
+acf(diff(ts_gas_superior),12)
+pacf(diff(ts_gas_superior))
+
+
+# variableGasSuper
+ts_gas_regular <- ts(datosImp$GasRegular, start=c(2001, 1), end=c(2020, 3), frequency=12) # Crear serie de tiempo
+start(ts_gas_regular) # Inicio de serie
+end(ts_gas_regular) # Fin de serie
+frequency(ts_gas_regular) # Frecuencia de serie
+#Ver el gráfico de la serie
+plot(ts_gas_regular)
+abline(reg=lm(ts_gas_regular~time(ts_gas_regular)), col=c("red"))
+# Descomposicion en componentes
+dec.ts_gas_regular<-decompose(ts_gas_regular)
+plot(dec.ts_gas_regular)
+# Para saber si hay raices unitarias
+adfTest(ts_gas_regular)
+# Grafico de autocorrelacion
+acf(ts_gas_regular)
+# Funciones de autocorrelacion y autocorrelacion parcial
+acf(diff(ts_gas_regular),12)
+pacf(diff(ts_gas_regular))
+
+
+# variableGasSuper
+ts_gas_diesel <- ts(datosImp$Diesel, start=c(2001, 1), end=c(2020, 3), frequency=12) # Crear serie de tiempo
+start(ts_gas_diesel) # Inicio de serie
+end(ts_gas_diesel) # Fin de serie
+frequency(ts_gas_diesel) # Frecuencia de serie
+#Ver el gráfico de la serie
+plot(ts_gas_diesel)
+abline(reg=lm(ts_gas_diesel~time(ts_gas_diesel)), col=c("red"))
+# Descomposicion en componentes
+dec.ts_gas_diesel<-decompose(ts_gas_diesel)
+plot(dec.ts_gas_diesel)
+# Para saber si hay raices unitarias
+adfTest(ts_gas_diesel)
+# Grafico de autocorrelacion
+acf(ts_gas_diesel)
+# Funciones de autocorrelacion y autocorrelacion parcial
+acf(diff(ts_gas_diesel),12)
+pacf(diff(ts_gas_diesel))
+
+
+# Hacer el modelo
+auto.arima(ts_gas_superior)
+
+fit <- arima(log(ts_gas_superior), c(0, 1, 1),seasonal = list(order = c(0, 1, 1), period = 12))
+pred <- predict(fit, n.ahead = 10*12)
+ts.plot(ts_gas_superior,2.718^pred$pred, log = "y", lty = c(1,3))
+
+fit2 <- arima(log(ts_gas_superior), c(2, 1, 1),seasonal = list(order = c(0, 1, 0), period = 12))
+
+forecastAP <- forecast(fit2, level = c(95), h = 120)
+autoplot(forecastAP)
+
+
+
