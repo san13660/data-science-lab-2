@@ -3,8 +3,6 @@
 # Maria Fernanda Estrada
 # Christopher Sandoval
 # Luis Delgado
-# Estuardo Diaz
-
 
 
 # Leer un pdf
@@ -42,7 +40,53 @@ datosImp$GasRegular <- as.numeric(gsub(",", "", datosImp$GasRegular))
 
 
 # --------------- Analisis Exploratorio ---------------
-# colocar codigo de luis
+
+a<-datosImp[-c(46,96,146,196),]
+
+hist(as.numeric(a$GLP),xlim=c(0,300),ylim = c(0,1000000))
+
+install.packages("ggplot2")  
+library(ggplot2)
+a$GLP<-as.numeric(levels(a$GLP))[a$GLP]
+qplot(as.numeric(a$GLP),geom = "histogram",ylim = c(0,10))
+
+a$GLP <- as.numeric(gsub(",", "", a$GLP))
+a$GasAviacion <- as.numeric(gsub(",", "", a$GasAviacion))
+a$GasSuperior <- as.numeric(gsub(",", "", a$GasSuperior))
+a$GasRegular <- as.numeric(gsub(",", "", a$GasRegular))
+a$Kerosina <- as.numeric(gsub(",", "", a$Kerosina))
+a$rTurboJet <- as.numeric(gsub(",", "", a$rTurboJet))
+a$Diesel <- as.numeric(gsub(",", "", a$Diesel))
+a$DieselLS <- as.numeric(gsub(",", "", a$DieselLS))
+a$DieselULS <- as.numeric(gsub(",", "", a$DieselULS))
+a$Bunker <- as.numeric(gsub(",", "", a$Bunker))
+a$Asfalto <- as.numeric(gsub(",", "", a$Asfalto))
+a$PetCoke <- as.numeric(gsub(",", "", a$PetCoke))
+a$AceitesLub <- as.numeric(gsub(",", "", a$AceitesLub))
+a$GrasasLub <- as.numeric(gsub(",", "", a$GrasasLub))
+a$Solventes <- as.numeric(gsub(",", "", a$Solventes))
+a$Naftas <- as.numeric(gsub(",", "", a$Naftas))
+a$Ceras <- as.numeric(gsub(",", "", a$Ceras))
+a$Butano <- as.numeric(gsub(",", "", a$Butano))
+a$MTBE <- as.numeric(gsub(",", "", a$MTBE))
+a$GrasasLub <- as.numeric(gsub(",", "", a$GrasasLub))
+a$Orimulsion <- as.numeric(gsub(",", "", a$Orimulsion))
+a$MezclasOleosas <- as.numeric(gsub(",", "", a$MezclasOleosas))
+a$Total <- as.numeric(gsub(",", "", a$Total))
+
+# Histogramas de cuantitativas
+hist(datosImp$GasSuperior)
+hist(datosImp$GasRegular)
+hist(datosImp$Diesel)
+
+# Caja y bigote de cuantitativas
+boxplot(datosImp$GasSuperior,horizontal = TRUE)
+boxplot(datosImp$GasRegular,horizontal = TRUE)
+boxplot(datosImp$Diesel,horizontal = TRUE)
+
+# Barras de vcualitativas
+barplot(table(datosImp$Anio),ylim = c(0,15))
+barplot(table(datosImp$Mes),ylim=c(0,22))
 
 
 # --------------- Analisis Series de tiempo ---------------
@@ -117,45 +161,30 @@ pacf(diff(ts_gas_diesel))
 
 
 # --------------- Generacion del modelo ---------------
-# ***********pruebas **********
-# Hacer el modelo
 
 #Modelo de Super
 auto.arima(ts_gas_superior)
-
 fit <- arima(log(ts_gas_superior), c(0, 1, 1),seasonal = list(order = c(0, 1, 1), period = 12))
 pred <- predict(fit, n.ahead = 10*12)
 ts.plot(ts_gas_superior,2.718^pred$pred, log = "y", lty = c(1,3))
-
 fit2 <- arima(log(ts_gas_superior), c(15, 1, 15),seasonal = list(order = c(0, 1, 0), period = 12))
-
 forecastAP <- forecast(fit2, level = c(95), h = 120)
 autoplot(forecastAP)
 
 #Modelo de Regular
 auto.arima(ts_gas_regular)
-
 fit <- arima(log(ts_gas_regular), c(0, 1, 1),seasonal = list(order = c(0, 1, 1), period = 12))
 pred <- predict(fit, n.ahead = 10*12)
 ts.plot(ts_gas_superior,2.718^pred$pred, log = "y", lty = c(1,3))
-
 fit2 <- arima(log(ts_gas_regular), c(15, 1, 15),seasonal = list(order = c(0, 1, 0), period = 12))
-
 forecastAP <- forecast(fit2, level = c(95), h = 120)
 autoplot(forecastAP)
 
 #Modelo de Diesel
 auto.arima(ts_gas_diesel)
-
 fit <- arima(log(ts_gas_diesel), c(0, 1, 1),seasonal = list(order = c(0, 1, 1), period = 12))
 pred <- predict(fit, n.ahead = 10*12)
 ts.plot(ts_gas_superior,2.718^pred$pred, log = "y", lty = c(1,3))
-
 fit2 <- arima(log(ts_gas_diesel), c(17, 1, 17),seasonal = list(order = c(0, 1, 0), period = 12))
-
 forecastAP <- forecast(fit2, level = c(95), h = 120)
 autoplot(forecastAP)
-
-
-# --------------- Prediccion con modelos generados ---------------
-# ************pruebas***********
