@@ -33,5 +33,14 @@ a$Orimulsion <- as.numeric(gsub(",", "", a$Orimulsion))
 a$MezclasOleosas <- as.numeric(gsub(",", "", a$MezclasOleosas))
 a$Total <- as.numeric(gsub(",", "", a$Total))
 
-
-
+# Histogramas de cuantitativas
+hist(datosImp$GasSuperior)
+hist(datosImp$GasRegular)
+hist(datosImp$Diesel)
+#Caja y bigote de cuantitativas
+boxplot(datosImp$GasSuperior,horizontal = TRUE)
+boxplot(datosImp$GasRegular,horizontal = TRUE)
+boxplot(datosImp$Diesel,horizontal = TRUE)
+#Barras de vcualitativas
+barplot(table(datosImp$Anio),ylim = c(0,15))
+barplot(table(datosImp$Mes),ylim=c(0,22))
