@@ -119,6 +119,8 @@ pacf(diff(ts_gas_diesel))
 # --------------- Generacion del modelo ---------------
 # ***********pruebas **********
 # Hacer el modelo
+
+#Modelo de Super
 auto.arima(ts_gas_superior)
 
 fit <- arima(log(ts_gas_superior), c(0, 1, 1),seasonal = list(order = c(0, 1, 1), period = 12))
@@ -130,7 +132,30 @@ fit2 <- arima(log(ts_gas_superior), c(15, 1, 15),seasonal = list(order = c(0, 1,
 forecastAP <- forecast(fit2, level = c(95), h = 120)
 autoplot(forecastAP)
 
-?auto.arima
+#Modelo de Regular
+auto.arima(ts_gas_regular)
+
+fit <- arima(log(ts_gas_regular), c(0, 1, 1),seasonal = list(order = c(0, 1, 1), period = 12))
+pred <- predict(fit, n.ahead = 10*12)
+ts.plot(ts_gas_superior,2.718^pred$pred, log = "y", lty = c(1,3))
+
+fit2 <- arima(log(ts_gas_regular), c(15, 1, 15),seasonal = list(order = c(0, 1, 0), period = 12))
+
+forecastAP <- forecast(fit2, level = c(95), h = 120)
+autoplot(forecastAP)
+
+#Modelo de Diesel
+auto.arima(ts_gas_diesel)
+
+fit <- arima(log(ts_gas_diesel), c(0, 1, 1),seasonal = list(order = c(0, 1, 1), period = 12))
+pred <- predict(fit, n.ahead = 10*12)
+ts.plot(ts_gas_superior,2.718^pred$pred, log = "y", lty = c(1,3))
+
+fit2 <- arima(log(ts_gas_diesel), c(17, 1, 17),seasonal = list(order = c(0, 1, 0), period = 12))
+
+forecastAP <- forecast(fit2, level = c(95), h = 120)
+autoplot(forecastAP)
+
 
 # --------------- Prediccion con modelos generados ---------------
 # ************pruebas***********
